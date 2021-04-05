@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io' show Platform;
 
 /// BackgroundLocation plugin to get background
 /// lcoation updates in iOS and Android
@@ -18,18 +19,15 @@ class BackgroundLocation {
 
   /// Start receiving location updated
   static startLocationService({double distanceFilter = 0.0}) async {
-    return await _channel.invokeMethod("start_location_service", <String, dynamic>{
-      "distance_filter": distanceFilter
-    });
+    return await _channel.invokeMethod("start_location_service",
+        <String, dynamic>{"distance_filter": distanceFilter});
   }
 
-  static setAndroidNotification({String title, String message, String icon}) async {
+  static setAndroidNotification(
+      {String title, String message, String icon}) async {
     if (Platform.isAndroid) {
-      return await _channel.invokeMethod("set_android_notification", <String, dynamic>{
-        "title": title,
-        "message": message,
-        "icon": icon
-      });
+      return await _channel.invokeMethod("set_android_notification",
+          <String, dynamic>{"title": title, "message": message, "icon": icon});
     } else {
       //return Promise.resolve();
     }
@@ -44,7 +42,6 @@ class BackgroundLocation {
       //return Promise.resolve();
     }
   }
-
 
   /// Get the current location once.
   Future<Location> getCurrentLocation() async {
@@ -75,7 +72,7 @@ class BackgroundLocation {
     } else if (await Permission.locationWhenInUse.isDenied ||
         await Permission.locationWhenInUse.isPermanentlyDenied ||
         await Permission.locationWhenInUse.isRestricted ||
-        await Permission.locationWhenInUse.isUndetermined) {
+        await Permission.locationWhenInUse.isRestricted) {
       if (onDenied != null) {
         onDenied();
       }
@@ -98,15 +95,14 @@ class BackgroundLocation {
         // Call the user passed function
         location(
           Location(
-            latitude: locationData["latitude"],
-            longitude: locationData["longitude"],
-            altitude: locationData["altitude"],
-            accuracy: locationData["accuracy"],
-            bearing: locationData["bearing"],
-            speed: locationData["speed"],
-            time: locationData["time"],
-            isMock: locationData["is_mock"]
-          ),
+              latitude: locationData["latitude"],
+              longitude: locationData["longitude"],
+              altitude: locationData["altitude"],
+              accuracy: locationData["accuracy"],
+              bearing: locationData["bearing"],
+              speed: locationData["speed"],
+              time: locationData["time"],
+              isMock: locationData["is_mock"]),
         );
       }
     });
@@ -134,7 +130,7 @@ class Location {
   double speed;
   double time;
   bool isMock;
-  
+
   toMap() {
     var obj = {
       'latitude': this.latitude,
@@ -147,5 +143,5 @@ class Location {
       'is_mock': this.isMock
     };
     return obj;
-  } 
+  }
 }
